@@ -1,28 +1,29 @@
-import { useState, useEffect } from 'react';
-import { Card, CardContent } from './ui/card';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { Star, Filter } from 'lucide-react';
+import { useState, useEffect } from 'react'
+import { Card, CardContent } from './ui/card'
+import { Button } from './ui/button'
+import { Badge } from './ui/badge'
+import { Star, Filter } from 'lucide-react'
+import AddToCartButton from './AddToCartButton'
 
 // Importar imagens
-import caldoVerdeImg from '../assets/caldo_verde.png';
-import canjinhaImg from '../assets/canjinha.png';
-import cremeMandioquinhaImg from '../assets/creme_mandioquinha.png';
-import sopaMinestrone from '../assets/sopa_minestrone.png';
-import strogonoffFrangoImg from '../assets/strogonoff_frango.png';
-import escondidinhoCarneSeca from '../assets/escondidinho_carne_seca.png';
-import lasanhaBolonhesa from '../assets/lasanha_bolonhesa.png';
-import sucoLaranjaImg from '../assets/suco_laranja.png';
-import refrigeranteColaImg from '../assets/refrigerante_cola.png';
-import aguaMineralImg from '../assets/agua_mineral.png';
-import pudimLeiteCondensado from '../assets/pudim_leite_condensado.png';
-import boloCenouraImg from '../assets/bolo_cenoura.png';
+import caldoVerdeImg from '../assets/caldo_verde.png'
+import canjinhaImg from '../assets/canjinha.png'
+import cremeMandioquinhaImg from '../assets/creme_mandioquinha.png'
+import sopaMinestrone from '../assets/sopa_minestrone.png'
+import strogonoffFrangoImg from '../assets/strogonoff_frango.png'
+import escondidinhoCarneSeca from '../assets/escondidinho_carne_seca.png'
+import lasanhaBolonhesa from '../assets/lasanha_bolonhesa.png'
+import sucoLaranjaImg from '../assets/suco_laranja.png'
+import refrigeranteColaImg from '../assets/refrigerante_cola.png'
+import aguaMineralImg from '../assets/agua_mineral.png'
+import pudimLeiteCondensado from '../assets/pudim_leite_condensado.png'
+import boloCenouraImg from '../assets/bolo_cenoura.png'
 
 const Products = () => {
-  const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState([])
+  const [categories, setCategories] = useState([])
+  const [selectedCategory, setSelectedCategory] = useState('all')
+  const [loading, setLoading] = useState(true)
 
   // Mapeamento de imagens
   const imageMap = {
@@ -37,41 +38,42 @@ const Products = () => {
     '/uploads/refrigerante_cola.png': refrigeranteColaImg,
     '/uploads/agua_mineral.png': aguaMineralImg,
     '/uploads/pudim_leite_condensado.png': pudimLeiteCondensado,
-    '/uploads/bolo_cenoura.png': boloCenouraImg,
-  };
+    '/uploads/bolo_cenoura.png': boloCenouraImg
+  }
 
   useEffect(() => {
-    fetchProducts();
-    fetchCategories();
-  }, []);
+    fetchProducts()
+    fetchCategories()
+  }, [])
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/products');
-      const data = await response.json();
-      setProducts(data);
+      const response = await fetch('http://localhost:3001/api/products')
+      const data = await response.json()
+      setProducts(data)
     } catch (error) {
-      console.error('Erro ao buscar produtos:', error);
+      console.error('Erro ao buscar produtos:', error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/categories');
-      const data = await response.json();
-      setCategories(data);
+      const response = await fetch('http://localhost:3001/api/categories')
+      const data = await response.json()
+      setCategories(data)
     } catch (error) {
-      console.error('Erro ao buscar categorias:', error);
+      console.error('Erro ao buscar categorias:', error)
     }
-  };
+  }
 
-  const filteredProducts = selectedCategory === 'all' 
-    ? products 
-    : products.filter(product => product.category_id === selectedCategory);
+  const filteredProducts =
+    selectedCategory === 'all'
+      ? products
+      : products.filter((product) => product.category_id === selectedCategory)
 
-  const featuredProducts = products.filter(product => product.is_featured);
+  const featuredProducts = products.filter((product) => product.is_featured)
 
   if (loading) {
     return (
@@ -83,7 +85,7 @@ const Products = () => {
           </div>
         </div>
       </section>
-    );
+    )
   }
 
   return (
@@ -95,7 +97,8 @@ const Products = () => {
             Nossos Produtos
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Descubra nossa seleção de pratos caseiros, preparados com ingredientes frescos e muito carinho
+            Descubra nossa seleção de pratos caseiros, preparados com
+            ingredientes frescos e muito carinho
           </p>
         </div>
 
@@ -109,8 +112,8 @@ const Products = () => {
               {featuredProducts.map((product) => (
                 <Card key={product.id} className="product-card overflow-hidden">
                   <div className="aspect-square overflow-hidden">
-                    <img 
-                      src={imageMap[product.image_url] || product.image_url} 
+                    <img
+                      src={imageMap[product.image_url] || product.image_url}
                       alt={product.name}
                       className="w-full h-full object-cover"
                     />
@@ -118,7 +121,10 @@ const Products = () => {
                   <CardContent className="p-6">
                     <div className="flex items-start justify-between mb-2">
                       <h4 className="text-lg font-semibold">{product.name}</h4>
-                      <Badge variant="secondary" className="bg-primary/10 text-primary">
+                      <Badge
+                        variant="secondary"
+                        className="bg-primary/10 text-primary"
+                      >
                         <Star className="w-3 h-3 mr-1 fill-current" />
                         Destaque
                       </Badge>
@@ -126,12 +132,13 @@ const Products = () => {
                     <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
                       {product.description}
                     </p>
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between mb-4">
                       <span className="text-xl font-bold text-primary">
                         R$ {product.price.toFixed(2).replace('.', ',')}
                       </span>
                       <Badge variant="outline">{product.category_name}</Badge>
                     </div>
+                    <AddToCartButton product={product} className="w-full" />
                   </CardContent>
                 </Card>
               ))}
@@ -165,8 +172,8 @@ const Products = () => {
           {filteredProducts.map((product) => (
             <Card key={product.id} className="product-card overflow-hidden">
               <div className="aspect-square overflow-hidden">
-                <img 
-                  src={imageMap[product.image_url] || product.image_url} 
+                <img
+                  src={imageMap[product.image_url] || product.image_url}
                   alt={product.name}
                   className="w-full h-full object-cover"
                 />
@@ -176,7 +183,7 @@ const Products = () => {
                 <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
                   {product.description}
                 </p>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mb-4">
                   <span className="text-lg font-bold text-primary">
                     R$ {product.price.toFixed(2).replace('.', ',')}
                   </span>
@@ -184,6 +191,7 @@ const Products = () => {
                     {product.category_name}
                   </Badge>
                 </div>
+                <AddToCartButton product={product} className="w-full" />
               </CardContent>
             </Card>
           ))}
@@ -191,13 +199,14 @@ const Products = () => {
 
         {filteredProducts.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-muted-foreground">Nenhum produto encontrado nesta categoria.</p>
+            <p className="text-muted-foreground">
+              Nenhum produto encontrado nesta categoria.
+            </p>
           </div>
         )}
       </div>
     </section>
-  );
-};
+  )
+}
 
-export default Products;
-
+export default Products

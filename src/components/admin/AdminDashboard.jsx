@@ -1,35 +1,35 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { Textarea } from '../ui/textarea';
-import { Badge } from '../ui/badge';
-import { 
-  Mountain, 
-  LogOut, 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Users, 
-  Package, 
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
+import { Button } from '../ui/button'
+import { Input } from '../ui/input'
+import { Label } from '../ui/label'
+import { Textarea } from '../ui/textarea'
+import { Badge } from '../ui/badge'
+import {
+  Mountain,
+  LogOut,
+  Plus,
+  Edit,
+  Trash2,
+  Users,
+  Package,
   Star,
   AlertCircle,
   CheckCircle
-} from 'lucide-react';
+} from 'lucide-react'
 
 const AdminDashboard = () => {
-  const [user, setUser] = useState(null);
-  const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [customers, setCustomers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('overview');
-  const [showProductForm, setShowProductForm] = useState(false);
-  const [editingProduct, setEditingProduct] = useState(null);
-  const [message, setMessage] = useState({ type: '', text: '' });
-  const navigate = useNavigate();
+  const [user, setUser] = useState(null)
+  const [products, setProducts] = useState([])
+  const [categories, setCategories] = useState([])
+  const [customers, setCustomers] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState('overview')
+  const [showProductForm, setShowProductForm] = useState(false)
+  const [editingProduct, setEditingProduct] = useState(null)
+  const [message, setMessage] = useState({ type: '', text: '' })
+  const navigate = useNavigate()
 
   const [productForm, setProductForm] = useState({
     name: '',
@@ -37,24 +37,24 @@ const AdminDashboard = () => {
     price: '',
     category_id: '',
     is_featured: false
-  });
+  })
 
   useEffect(() => {
-    checkAuth();
-    fetchData();
-  }, []);
+    checkAuth()
+    fetchData()
+  }, [])
 
   const checkAuth = () => {
-    const token = localStorage.getItem('adminToken');
-    const userData = localStorage.getItem('adminUser');
-    
+    const token = localStorage.getItem('adminToken')
+    const userData = localStorage.getItem('adminUser')
+
     if (!token || !userData) {
-      navigate('/admin');
-      return;
+      navigate('/admin')
+      return
     }
-    
-    setUser(JSON.parse(userData));
-  };
+
+    setUser(JSON.parse(userData))
+  }
 
   const fetchData = async () => {
     try {
@@ -63,125 +63,133 @@ const AdminDashboard = () => {
         fetch('http://localhost:3001/api/categories'),
         fetch('http://localhost:3001/api/customers', {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+            Authorization: `Bearer ${localStorage.getItem('adminToken')}`
           }
         })
-      ]);
+      ])
 
       const [productsData, categoriesData, customersData] = await Promise.all([
         productsRes.json(),
         categoriesRes.json(),
         customersRes.json()
-      ]);
+      ])
 
-      setProducts(productsData);
-      setCategories(categoriesData);
-      setCustomers(customersData);
+      setProducts(productsData)
+      setCategories(categoriesData)
+      setCustomers(customersData)
     } catch (error) {
-      console.error('Erro ao buscar dados:', error);
+      console.error('Erro ao buscar dados:', error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleLogout = () => {
-    localStorage.removeItem('adminToken');
-    localStorage.removeItem('adminUser');
-    navigate('/admin');
-  };
+    localStorage.removeItem('adminToken')
+    localStorage.removeItem('adminUser')
+    navigate('/admin')
+  }
 
   const handleProductSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage({ type: '', text: '' });
+    e.preventDefault()
+    setLoading(true)
+    setMessage({ type: '', text: '' })
 
     try {
-      const url = editingProduct 
+      const url = editingProduct
         ? `http://localhost:3001/api/products/${editingProduct.id}`
-        : 'http://localhost:3001/api/products';
-      
-      const method = editingProduct ? 'PUT' : 'POST';
+        : 'http://localhost:3001/api/products'
+
+      const method = editingProduct ? 'PUT' : 'POST'
 
       const response = await fetch(url, {
         method,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+          Authorization: `Bearer ${localStorage.getItem('adminToken')}`
         },
         body: JSON.stringify({
           ...productForm,
           price: parseFloat(productForm.price)
-        }),
-      });
+        })
+      })
 
       if (response.ok) {
-        setMessage({ 
-          type: 'success', 
-          text: editingProduct ? 'Produto atualizado com sucesso!' : 'Produto criado com sucesso!' 
-        });
-        setShowProductForm(false);
-        setEditingProduct(null);
+        setMessage({
+          type: 'success',
+          text: editingProduct
+            ? 'Produto atualizado com sucesso!'
+            : 'Produto criado com sucesso!'
+        })
+        setShowProductForm(false)
+        setEditingProduct(null)
         setProductForm({
           name: '',
           description: '',
           price: '',
           category_id: '',
           is_featured: false
-        });
-        fetchData();
+        })
+        fetchData()
       } else {
-        const data = await response.json();
-        setMessage({ type: 'error', text: data.message || 'Erro ao salvar produto' });
+        const data = await response.json()
+        setMessage({
+          type: 'error',
+          text: data.message || 'Erro ao salvar produto'
+        })
       }
     } catch (error) {
-      console.error('Erro ao salvar produto:', error);
-      setMessage({ type: 'error', text: 'Erro de conexão' });
+      console.error('Erro ao salvar produto:', error)
+      setMessage({ type: 'error', text: 'Erro de conexão' })
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleEditProduct = (product) => {
-    setEditingProduct(product);
+    setEditingProduct(product)
     setProductForm({
       name: product.name,
       description: product.description,
       price: product.price.toString(),
       category_id: product.category_id.toString(),
       is_featured: product.is_featured === 1
-    });
-    setShowProductForm(true);
-  };
+    })
+    setShowProductForm(true)
+  }
 
   const handleDeleteProduct = async (productId) => {
-    if (!confirm('Tem certeza que deseja excluir este produto?')) return;
+    if (!confirm('Tem certeza que deseja excluir este produto?')) return
 
     try {
-      const response = await fetch(`http://localhost:3001/api/products/${productId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+      const response = await fetch(
+        `http://localhost:3001/api/products/${productId}`,
+        {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('adminToken')}`
+          }
         }
-      });
+      )
 
       if (response.ok) {
-        setMessage({ type: 'success', text: 'Produto excluído com sucesso!' });
-        fetchData();
+        setMessage({ type: 'success', text: 'Produto excluído com sucesso!' })
+        fetchData()
       } else {
-        setMessage({ type: 'error', text: 'Erro ao excluir produto' });
+        setMessage({ type: 'error', text: 'Erro ao excluir produto' })
       }
     } catch (error) {
-      console.error('Erro ao excluir produto:', error);
-      setMessage({ type: 'error', text: 'Erro de conexão' });
+      console.error('Erro ao excluir produto:', error)
+      setMessage({ type: 'error', text: 'Erro de conexão' })
     }
-  };
+  }
 
   if (loading && !user) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
-    );
+    )
   }
 
   return (
@@ -214,11 +222,13 @@ const AdminDashboard = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Mensagem de feedback */}
         {message.text && (
-          <div className={`flex items-center gap-2 p-4 rounded-lg mb-6 ${
-            message.type === 'success' 
-              ? 'bg-green-50 text-green-700 border border-green-200' 
-              : 'bg-red-50 text-red-700 border border-red-200'
-          }`}>
+          <div
+            className={`flex items-center gap-2 p-4 rounded-lg mb-6 ${
+              message.type === 'success'
+                ? 'bg-green-50 text-green-700 border border-green-200'
+                : 'bg-red-50 text-red-700 border border-red-200'
+            }`}
+          >
             {message.type === 'success' ? (
               <CheckCircle className="w-5 h-5" />
             ) : (
@@ -258,20 +268,24 @@ const AdminDashboard = () => {
           <div className="grid md:grid-cols-3 gap-6">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total de Produtos</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Total de Produtos
+                </CardTitle>
                 <Package className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{products.length}</div>
                 <p className="text-xs text-muted-foreground">
-                  {products.filter(p => p.is_featured).length} em destaque
+                  {products.filter((p) => p.is_featured).length} em destaque
                 </p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Clientes Cadastrados</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Clientes Cadastrados
+                </CardTitle>
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -284,7 +298,9 @@ const AdminDashboard = () => {
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Categorias</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Categorias
+                </CardTitle>
                 <Star className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -301,17 +317,19 @@ const AdminDashboard = () => {
           <div>
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold">Gerenciar Produtos</h2>
-              <Button onClick={() => {
-                setShowProductForm(true);
-                setEditingProduct(null);
-                setProductForm({
-                  name: '',
-                  description: '',
-                  price: '',
-                  category_id: '',
-                  is_featured: false
-                });
-              }}>
+              <Button
+                onClick={() => {
+                  setShowProductForm(true)
+                  setEditingProduct(null)
+                  setProductForm({
+                    name: '',
+                    description: '',
+                    price: '',
+                    category_id: '',
+                    is_featured: false
+                  })
+                }}
+              >
                 <Plus className="w-4 h-4 mr-2" />
                 Novo Produto
               </Button>
@@ -332,7 +350,12 @@ const AdminDashboard = () => {
                         <Input
                           id="name"
                           value={productForm.name}
-                          onChange={(e) => setProductForm({...productForm, name: e.target.value})}
+                          onChange={(e) =>
+                            setProductForm({
+                              ...productForm,
+                              name: e.target.value
+                            })
+                          }
                           required
                         />
                       </div>
@@ -343,7 +366,12 @@ const AdminDashboard = () => {
                           type="number"
                           step="0.01"
                           value={productForm.price}
-                          onChange={(e) => setProductForm({...productForm, price: e.target.value})}
+                          onChange={(e) =>
+                            setProductForm({
+                              ...productForm,
+                              price: e.target.value
+                            })
+                          }
                           required
                         />
                       </div>
@@ -353,12 +381,17 @@ const AdminDashboard = () => {
                       <select
                         id="category"
                         value={productForm.category_id}
-                        onChange={(e) => setProductForm({...productForm, category_id: e.target.value})}
+                        onChange={(e) =>
+                          setProductForm({
+                            ...productForm,
+                            category_id: e.target.value
+                          })
+                        }
                         className="w-full p-2 border border-border rounded-md"
                         required
                       >
                         <option value="">Selecione uma categoria</option>
-                        {categories.map(category => (
+                        {categories.map((category) => (
                           <option key={category.id} value={category.id}>
                             {category.name}
                           </option>
@@ -370,7 +403,12 @@ const AdminDashboard = () => {
                       <Textarea
                         id="description"
                         value={productForm.description}
-                        onChange={(e) => setProductForm({...productForm, description: e.target.value})}
+                        onChange={(e) =>
+                          setProductForm({
+                            ...productForm,
+                            description: e.target.value
+                          })
+                        }
                         rows={3}
                       />
                     </div>
@@ -379,7 +417,12 @@ const AdminDashboard = () => {
                         type="checkbox"
                         id="featured"
                         checked={productForm.is_featured}
-                        onChange={(e) => setProductForm({...productForm, is_featured: e.target.checked})}
+                        onChange={(e) =>
+                          setProductForm({
+                            ...productForm,
+                            is_featured: e.target.checked
+                          })
+                        }
                       />
                       <Label htmlFor="featured">Produto em destaque</Label>
                     </div>
@@ -387,9 +430,9 @@ const AdminDashboard = () => {
                       <Button type="submit" disabled={loading}>
                         {loading ? 'Salvando...' : 'Salvar'}
                       </Button>
-                      <Button 
-                        type="button" 
-                        variant="outline" 
+                      <Button
+                        type="button"
+                        variant="outline"
                         onClick={() => setShowProductForm(false)}
                       >
                         Cancelar
@@ -401,7 +444,7 @@ const AdminDashboard = () => {
             )}
 
             <div className="grid gap-4">
-              {products.map(product => (
+              {products.map((product) => (
                 <Card key={product.id}>
                   <CardContent className="p-4">
                     <div className="flex justify-between items-start">
@@ -409,12 +452,17 @@ const AdminDashboard = () => {
                         <div className="flex items-center gap-2 mb-2">
                           <h3 className="font-semibold">{product.name}</h3>
                           {product.is_featured && (
-                            <Badge variant="secondary" className="bg-primary/10 text-primary">
+                            <Badge
+                              variant="secondary"
+                              className="bg-primary/10 text-primary"
+                            >
                               <Star className="w-3 h-3 mr-1 fill-current" />
                               Destaque
                             </Badge>
                           )}
-                          <Badge variant="outline">{product.category_name}</Badge>
+                          <Badge variant="outline">
+                            {product.category_name}
+                          </Badge>
                         </div>
                         <p className="text-sm text-muted-foreground mb-2">
                           {product.description}
@@ -452,25 +500,37 @@ const AdminDashboard = () => {
           <div>
             <h2 className="text-2xl font-bold mb-6">Clientes Cadastrados</h2>
             <div className="grid gap-4">
-              {customers.map(customer => (
+              {customers.map((customer) => (
                 <Card key={customer.id}>
                   <CardContent className="p-4">
                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
                       <div>
                         <p className="font-semibold">{customer.full_name}</p>
-                        <p className="text-sm text-muted-foreground">{customer.email}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {customer.email}
+                        </p>
                       </div>
                       <div>
-                        <p className="text-sm text-muted-foreground">Telefone</p>
+                        <p className="text-sm text-muted-foreground">
+                          Telefone
+                        </p>
                         <p>{customer.phone || 'Não informado'}</p>
                       </div>
                       <div>
-                        <p className="text-sm text-muted-foreground">Endereço</p>
+                        <p className="text-sm text-muted-foreground">
+                          Endereço
+                        </p>
                         <p>{customer.address || 'Não informado'}</p>
                       </div>
                       <div>
-                        <p className="text-sm text-muted-foreground">Cadastrado em</p>
-                        <p>{new Date(customer.created_at).toLocaleDateString('pt-BR')}</p>
+                        <p className="text-sm text-muted-foreground">
+                          Cadastrado em
+                        </p>
+                        <p>
+                          {new Date(customer.created_at).toLocaleDateString(
+                            'pt-BR'
+                          )}
+                        </p>
                       </div>
                     </div>
                   </CardContent>
@@ -481,8 +541,7 @@ const AdminDashboard = () => {
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default AdminDashboard;
-
+export default AdminDashboard
