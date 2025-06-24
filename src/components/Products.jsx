@@ -4,7 +4,7 @@ import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Star, Filter } from 'lucide-react';
 
-// Importar imagens
+// Imagens
 import caldoVerdeImg from '../assets/caldo_verde.png';
 import canjinhaImg from '../assets/canjinha.png';
 import cremeMandioquinhaImg from '../assets/creme_mandioquinha.png';
@@ -23,8 +23,8 @@ const Products = () => {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Mapeamento de imagens
   const imageMap = {
     '/uploads/caldo_verde.png': caldoVerdeImg,
     '/uploads/canjinha.png': canjinhaImg,
@@ -41,6 +41,8 @@ const Products = () => {
   };
 
   useEffect(() => {
+    const customer = localStorage.getItem('customerData');
+    if (customer) setIsAuthenticated(true);
     fetchProducts();
     fetchCategories();
   }, []);
@@ -67,11 +69,12 @@ const Products = () => {
     }
   };
 
-  const filteredProducts = selectedCategory === 'all' 
-    ? products 
-    : products.filter(product => product.category_id === selectedCategory);
+  const filteredProducts =
+    selectedCategory === 'all'
+      ? products
+      : products.filter((product) => product.category_id === selectedCategory);
 
-  const featuredProducts = products.filter(product => product.is_featured);
+  const featuredProducts = products.filter((product) => product.is_featured);
 
   const formatPrice = (value) => {
     const parsed = parseFloat(value);
@@ -81,11 +84,9 @@ const Products = () => {
   if (loading) {
     return (
       <section id="produtos" className="section-padding">
-        <div className="container-max">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-4 text-muted-foreground">Carregando produtos...</p>
-          </div>
+        <div className="container-max text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto" />
+          <p className="mt-4 text-muted-foreground">Carregando produtos...</p>
         </div>
       </section>
     );
@@ -94,11 +95,8 @@ const Products = () => {
   return (
     <section id="produtos" className="section-padding">
       <div className="container-max">
-        {/* Header */}
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
-            Nossos Produtos
-          </h2>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">Nossos Produtos</h2>
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             Descubra nossa seleção de pratos caseiros, preparados com ingredientes frescos e muito carinho
           </p>
@@ -107,15 +105,13 @@ const Products = () => {
         {/* Produtos em Destaque */}
         {featuredProducts.length > 0 && (
           <div className="mb-16">
-            <h3 className="text-2xl md:text-3xl font-bold mb-8 text-center">
-              Produtos em Destaque
-            </h3>
+            <h3 className="text-2xl md:text-3xl font-bold mb-8 text-center">Produtos em Destaque</h3>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {featuredProducts.map((product) => (
-                <Card key={product.id} className="product-card overflow-hidden">
+                <Card key={product.id} className="overflow-hidden">
                   <div className="aspect-square overflow-hidden">
-                    <img 
-                      src={imageMap[product.image_url] || product.image_url} 
+                    <img
+                      src={imageMap[product.image_url] || product.image_url}
                       alt={product.name}
                       className="w-full h-full object-cover"
                     />
@@ -128,12 +124,14 @@ const Products = () => {
                         Destaque
                       </Badge>
                     </div>
-                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                      {product.description}
-                    </p>
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{product.description}</p>
                     <div className="flex items-center justify-between">
-                      <span className="text-xl font-bold text-primary">
-                        R$ {formatPrice(product.price)}
+                      <span
+                        className={`text-xl font-bold text-primary transition-all ${
+                          isAuthenticated ? '' : 'blur-sm'
+                        }`}
+                      >
+                        {formatPrice(product.price)}
                       </span>
                       <Badge variant="outline">{product.category_name}</Badge>
                     </div>
@@ -168,22 +166,24 @@ const Products = () => {
         {/* Grid de Produtos */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (
-            <Card key={product.id} className="product-card overflow-hidden">
+            <Card key={product.id} className="overflow-hidden">
               <div className="aspect-square overflow-hidden">
-                <img 
-                  src={imageMap[product.image_url] || product.image_url} 
+                <img
+                  src={imageMap[product.image_url] || product.image_url}
                   alt={product.name}
                   className="w-full h-full object-cover"
                 />
               </div>
               <CardContent className="p-4">
                 <h4 className="text-lg font-semibold mb-2">{product.name}</h4>
-                <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                  {product.description}
-                </p>
+                <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{product.description}</p>
                 <div className="flex items-center justify-between">
-                  <span className="text-lg font-bold text-primary">
-                    R$ {formatPrice(product.price)}
+                  <span
+                    className={`text-lg font-bold text-primary transition-all ${
+                      isAuthenticated ? '' : 'blur-sm'
+                    }`}
+                  >
+                    {formatPrice(product.price)}
                   </span>
                   <Badge variant="outline" className="text-xs">
                     {product.category_name}
@@ -194,9 +194,14 @@ const Products = () => {
           ))}
         </div>
 
-        {filteredProducts.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">Nenhum produto encontrado nesta categoria.</p>
+        {!isAuthenticated && (
+          <div className="text-center mt-10">
+            <p className="text-muted-foreground">
+              Faça login para visualizar os preços dos produtos.
+            </p>
+            <Button className="mt-4" onClick={() => window.location.href = '/Login'}>
+              Fazer Login
+            </Button>
           </div>
         )}
       </div>
@@ -205,4 +210,3 @@ const Products = () => {
 };
 
 export default Products;
-

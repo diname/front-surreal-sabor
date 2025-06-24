@@ -1,9 +1,24 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from './ui/button';
-import { Menu, X, Mountain } from 'lucide-react';
+import { Menu, X, Mountain, LogOut } from 'lucide-react';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const adminUser = localStorage.getItem('adminUser');
+    const customerUser = localStorage.getItem('customerData');
+
+    if (adminUser) {
+      setUser(JSON.parse(adminUser));
+      setIsAdmin(true);
+    } else if (customerUser) {
+      setUser(JSON.parse(customerUser));
+      setIsAdmin(false);
+    }
+  }, []);
 
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
@@ -11,6 +26,20 @@ const Header = () => {
       element.scrollIntoView({ behavior: 'smooth' });
     }
     setIsMenuOpen(false);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('adminUser');
+    localStorage.removeItem('customerToken');
+    localStorage.removeItem('customerData');
+    window.location.href = '/Login';
+  };
+
+  const getFirstName = () => {
+    if (!user) return '';
+    const name = isAdmin ? user.username : user.full_name;
+    return name?.split(' ')[0] || '';
   };
 
   return (
@@ -27,45 +56,36 @@ const Header = () => {
 
           {/* Menu Desktop */}
           <nav className="hidden md:flex items-center space-x-8">
-            <button 
-              onClick={() => scrollToSection('inicio')}
-              className="text-foreground hover:text-primary transition-colors"
-            >
+            <button onClick={() => scrollToSection('inicio')} className="text-foreground hover:text-primary transition-colors">
               Início
             </button>
-            <button 
-              onClick={() => scrollToSection('sobre')}
-              className="text-foreground hover:text-primary transition-colors"
-            >
+            <button onClick={() => scrollToSection('sobre')} className="text-foreground hover:text-primary transition-colors">
               Nossa História
             </button>
-            <button 
-              onClick={() => scrollToSection('produtos')}
-              className="text-foreground hover:text-primary transition-colors"
-            >
+            <button onClick={() => scrollToSection('produtos')} className="text-foreground hover:text-primary transition-colors">
               Produtos
             </button>
-            <button 
-              onClick={() => scrollToSection('contato')}
-              className="text-foreground hover:text-primary transition-colors"
-            >
+            <button onClick={() => scrollToSection('contato')} className="text-foreground hover:text-primary transition-colors">
               Contato
             </button>
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => window.location.href = '/admin'}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              Admin
-            </Button>
+
+            {user ? (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">Olá, {getFirstName()}</span>
+                <Button variant="ghost" size="sm" onClick={handleLogout}>
+                  <LogOut className="w-4 h-4 mr-1" />
+                  Sair
+                </Button>
+              </div>
+            ) : (
+              <Button variant="ghost" size="sm" onClick={() => window.location.href = '/Login'} className="text-muted-foreground hover:text-foreground">
+                Login
+              </Button>
+            )}
           </nav>
 
-          {/* Menu Mobile */}
-          <button
-            className="md:hidden"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
+          {/* Botão de menu mobile */}
+          <button className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
             {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
@@ -74,36 +94,37 @@ const Header = () => {
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-border">
             <nav className="flex flex-col space-y-4">
-              <button 
-                onClick={() => scrollToSection('inicio')}
-                className="text-left text-foreground hover:text-primary transition-colors"
-              >
+              <button onClick={() => scrollToSection('inicio')} className="text-left text-foreground hover:text-primary transition-colors">
                 Início
               </button>
-              <button 
-                onClick={() => scrollToSection('sobre')}
-                className="text-left text-foreground hover:text-primary transition-colors"
-              >
+              <button onClick={() => scrollToSection('sobre')} className="text-left text-foreground hover:text-primary transition-colors">
                 Nossa História
               </button>
-              <button 
-                onClick={() => scrollToSection('produtos')}
-                className="text-left text-foreground hover:text-primary transition-colors"
-              >
+              <button onClick={() => scrollToSection('produtos')} className="text-left text-foreground hover:text-primary transition-colors">
                 Produtos
               </button>
-              <button 
-                onClick={() => scrollToSection('contato')}
-                className="text-left text-foreground hover:text-primary transition-colors"
-              >
+              <button onClick={() => scrollToSection('contato')} className="text-left text-foreground hover:text-primary transition-colors">
                 Contato
               </button>
-              <button 
-                onClick={() => window.location.href = '/admin'}
-                className="text-left text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Admin
-              </button>
+
+              {user ? (
+                <>
+                  <span className="text-left text-muted-foreground">Olá, {getFirstName()}</span>
+                  <button
+                    onClick={handleLogout}
+                    className="text-left text-red-600 hover:text-red-700 flex items-center gap-1"
+                  >
+                    <LogOut className="w-4 h-4" /> Sair
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => window.location.href = '/Login'}
+                  className="text-left text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Login
+                </button>
+              )}
             </nav>
           </div>
         )}
@@ -113,4 +134,3 @@ const Header = () => {
 };
 
 export default Header;
-

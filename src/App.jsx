@@ -9,7 +9,7 @@ import About from './components/About';
 import Products from './components/Products';
 import CustomerForm from './components/CustomerForm';
 import Footer from './components/Footer';
-import AdminLogin from './components/admin/AdminLogin';
+import AdminLogin from './components/admin/Login';
 import AdminDashboard from './components/admin/AdminDashboard';
 
 function App() {
@@ -32,7 +32,7 @@ function App() {
           } />
           
           {/* Rotas administrativas */}
-          <Route path="/admin" element={<AdminLogin />} />
+          <Route path="/login" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
         </Routes>
       </div>

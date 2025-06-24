@@ -87,7 +87,7 @@ const AdminDashboard = () => {
   const handleLogout = () => {
     localStorage.removeItem('adminToken');
     localStorage.removeItem('adminUser');
-    navigate('/admin');
+    navigate('/Login');
   };
 
   const handleProductSubmit = async (e) => {
@@ -200,7 +200,7 @@ const AdminDashboard = () => {
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-muted-foreground">
-                Olá, {user?.username}
+                Olá, {user?.username?.split(' ')[0]}
               </span>
               <Button variant="outline" size="sm" onClick={handleLogout}>
                 <LogOut className="w-4 h-4 mr-2" />
