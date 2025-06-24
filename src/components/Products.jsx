@@ -73,6 +73,11 @@ const Products = () => {
 
   const featuredProducts = products.filter(product => product.is_featured);
 
+  const formatPrice = (value) => {
+    const parsed = parseFloat(value);
+    return isNaN(parsed) ? 'Preço inválido' : `R$ ${parsed.toFixed(2).replace('.', ',')}`;
+  };
+
   if (loading) {
     return (
       <section id="produtos" className="section-padding">
@@ -128,7 +133,7 @@ const Products = () => {
                     </p>
                     <div className="flex items-center justify-between">
                       <span className="text-xl font-bold text-primary">
-                        R$ {product.price.toFixed(2).replace('.', ',')}
+                        R$ {formatPrice(product.price)}
                       </span>
                       <Badge variant="outline">{product.category_name}</Badge>
                     </div>
@@ -178,7 +183,7 @@ const Products = () => {
                 </p>
                 <div className="flex items-center justify-between">
                   <span className="text-lg font-bold text-primary">
-                    R$ {product.price.toFixed(2).replace('.', ',')}
+                    R$ {formatPrice(product.price)}
                   </span>
                   <Badge variant="outline" className="text-xs">
                     {product.category_name}

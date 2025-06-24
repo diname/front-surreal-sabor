@@ -408,19 +408,19 @@ const AdminDashboard = () => {
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
                           <h3 className="font-semibold">{product.name}</h3>
-                          {product.is_featured && (
+                           
                             <Badge variant="secondary" className="bg-primary/10 text-primary">
                               <Star className="w-3 h-3 mr-1 fill-current" />
                               Destaque
                             </Badge>
-                          )}
+                          
                           <Badge variant="outline">{product.category_name}</Badge>
                         </div>
                         <p className="text-sm text-muted-foreground mb-2">
                           {product.description}
                         </p>
                         <p className="text-lg font-bold text-primary">
-                          R$ {product.price.toFixed(2).replace('.', ',')}
+                          R$ {parseFloat(product.price || 0).toFixed(2).replace('.', ',')}
                         </p>
                       </div>
                       <div className="flex space-x-2">
